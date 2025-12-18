@@ -30,9 +30,23 @@ const Router = () => {
   // Route Matching Logic
   
   // 1. Check for Public Profile Route: #/u/:username
-  const publicProfileMatch = route.match(/^#\/u\/([^/]+)$/);
-  if (publicProfileMatch) {
-    return <PublicProfile username={publicProfileMatch[1]} />;
+  // Using startsWith logic is more robust than strict regex for handling query params or trailing slashes
+  if (route.startsWith('#/u/')) {
+    // Extract the username part (everything after #/u/)
+    let username = route.substring(4); 
+    
+    // Remove query parameters if present (e.g. ?ref=instagram)
+    username = username.split('?')[0];
+
+    // Remove trailing slash if present
+    if (username.endsWith('/')) {
+      username = username.slice(0, -1);
+    }
+
+    // Only render if we successfully extracted a username
+    if (username) {
+      return <PublicProfile username={username} />;
+    }
   }
 
   // 2. Dashboard or Auth (Root path)
